@@ -89,10 +89,10 @@ const getHooks = (ctx, isLastError) => {
     const hookFileContent = eval(fs.readFileSync(hookFilePath, 'utf8'));
     const hook = replaceDollarWithHash(hookFileContent);
     if(typeof hook.action === 'string') {
+      hook.action = replaceInCode(hook.action, ctx);
       hook.action = babel.transformSync(hook.action, {
         presets: ['@babel/preset-env'],
       }).code;
-      hook.action = replaceInCode(hook.action, ctx);
     }
     ctx.cache.set("HookFileContent"+hookFilePath, hook);
     dbHooks[hookName] = hook;
