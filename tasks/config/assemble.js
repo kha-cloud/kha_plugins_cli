@@ -87,7 +87,7 @@ const getHooks = (ctx, isLastError) => {
     }
 
 
-    const hookFileContent = eval(replaceInCode(fs.readFileSync(hookFilePath, 'utf8')));
+    const hookFileContent = eval(replaceInCode(fs.readFileSync(hookFilePath, 'utf8'), ctx));
     const hook = replaceDollarWithHash(hookFileContent);
     
     //TODO ------------------- NOT WORKING -------------------
