@@ -25,6 +25,19 @@ function replaceDollarWithHash(jsonObj) {
   return jsonObj;
 }
 
+function replaceInCode(code, ctx) {
+  var newCode = code.replace(/@PS\//g, `/api/plugins_static/${ctx.pluginKey}/`);
+  // Plugins Key
+  newCode = newCode.replace(/@PK/g, `${ctx.pluginKey}`);
+  // Plugins API links
+  newCode = newCode.replace(/@PA\//g, `/api/plugin_api/${ctx.pluginKey}/`);
+  // Plugins VueJS links
+  newCode = newCode.replace(/@PV\//g, `/p/${ctx.pluginKey}/`);
+  // Plugins VueJS public links
+  newCode = newCode.replace(/@PVP\//g, `/public/${ctx.pluginKey}/`);
+  return newCode;
+}
+
 const getSeed = (ctx) => {
   const dbSeedFile = path.join(ctx.pluginDir, 'config', 'database', 'seed.jsonc');
   const dbSeedContent = fs.readFileSync(dbSeedFile, 'utf8');
@@ -79,6 +92,7 @@ const getHooks = (ctx, isLastError) => {
       hook.action = babel.transformSync(hook.action, {
         presets: ['@babel/preset-env'],
       }).code;
+      hook.action = replaceInCode(hook.action, ctx);
     }
     ctx.cache.set("HookFileContent"+hookFilePath, hook);
     dbHooks[hookName] = hook;
