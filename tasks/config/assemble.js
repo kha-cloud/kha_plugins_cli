@@ -86,14 +86,22 @@ const getHooks = (ctx, isLastError) => {
       ctx.cache.set("HookFileLastModifiedTime"+hookFilePath, currentModified);
     }
 
-    const hookFileContent = eval(fs.readFileSync(hookFilePath, 'utf8'));
+
+    const hookFileContent = eval(replaceInCode(fs.readFileSync(hookFilePath, 'utf8')));
     const hook = replaceDollarWithHash(hookFileContent);
+    
+    //TODO ------------------- NOT WORKING -------------------
+    //TODO ------------------- `hook.action` does not exist, it should be `hook.hooks[].action`
+    // if(hookFile == "User.js") console.log(hook); // DEBUG
+    // if(hookFile == "User.js") console.log(hook.action); // DEBUG
     if(typeof hook.action === 'string') {
-      hook.action = replaceInCode(hook.action, ctx);
       hook.action = babel.transformSync(hook.action, {
         presets: ['@babel/preset-env'],
       }).code;
     }
+    // if(hookFile == "User.js") console.log(hook.action); // DEBUG
+    //TODO ---------------------------------------------------
+
     ctx.cache.set("HookFileContent"+hookFilePath, hook);
     dbHooks[hookName] = hook;
   });
